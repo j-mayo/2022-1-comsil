@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [ $# -eq 0 ] # 입력받은 인자가 없다면
+then
+         echo Usage: phone searchfor \[...searchfor\]
+         echo \(You didn\'t tell me what you want to search for.\)
+else
+        egrep -i \($1\) mydata > temp # 첫 번쨰 인자에 관해 검색해서 결과를 temp 파일에 저장
+        array=($@)
+        for ((i=1 ; i<$# ; i++))
+        # 이전 egrep문 실행 결과에 i번쨰 인자에 대해 
+        # egrep문을 수행하여 and 연산을 구현
+        do
+        
+        if [ -s temp ]
+        then
+                egrep -i \(${array[i]}\) temp > temp_
+                # temp 파일에서 i번째 인자에 대해 검색 후 temp_ 파일에 저장
+        cat temp_ > temp # temp_ 파일 내용을 temp로 옮겨주기
+        fi
+
+        done
+
+        awk -f display.awk temp # 최종적으로 남은 내용(and 연산)을 출력
+        rm temp
+        rm temp_ # 임시 파일들 삭제
+fi
+
+
